@@ -7,28 +7,51 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
-  private Solenoid intakePiston;
-  private CANSparkMax mMotor;
 
+  private Solenoid intakePiston;
+  private CANSparkMax mLeader, mFollower;
+  private CANEncoder encoder;
 
   private Intake() {
-    mMotor = new CANSparkMax(Constants.Ports.INTAKE_MOTOR, MotorType.kBrushless);
+    mLeader = new CANSparkMax(Constants.Ports.INTAKE_MOTOR_1, MotorType.kBrushless);
+    mFollower = new CANSparkMax(Constants.Ports.INTAKE_MOTOR_2, MotorType.kBrushless);
     intakePiston = new Solenoid(Constants.Ports.INTAKE_SOLENOID);
+
+    mLeader.restoreFactoryDefaults();
+    mFollower.restoreFactoryDefaults();
+
+    mFollower.follow(mLeader, true);
+
+    encoder = mLeader.getEncoder();
+
     intakePiston.set(false);
+
+    mLeader.setSmartCurrentLimit(50);
+    mLeader.setIdleMode(IdleMode.kCoast);
+    mFollower.setSmartCurrentLimit(50);
+    mFollower.setIdleMode(IdleMode.kCoast);
+
+    register();
   }
 
   public void setPercent(double percent) {
-    mMotor.set(percent);
+    mLeader.set(percent);
+  }
+
+  public double getRPM() {
+    return encoder.getVelocity();
   }
  
   public void togglePiston() {
@@ -39,13 +62,23 @@ public class Intake extends SubsystemBase {
     intakePiston.set(extend);
   }
 
-  public boolean getPistonExtended() {
+  public boolean getPiston() {
     return intakePiston.get();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    updateSmartDashboard();
+  }
+
+  public void updateSmartDashboard() {
+    // if you put anything here make sure to register the subsystem.
+    
+    SmartDashboard.putNumber("Intake/RPMs", getRPM());
+
+    if (Robot.verbose) {
+      // put non-essential data here.
+    }
   }
 
   private static Intake instance;

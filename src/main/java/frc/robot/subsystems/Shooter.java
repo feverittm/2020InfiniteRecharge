@@ -10,13 +10,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
-/**
- * Add your docs here.
- */
 public class Shooter implements Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
+
   private CANSparkMax mMotor1, mMotor2;
   private CANPIDController mController;
   private CANEncoder mEncoder;
@@ -24,8 +21,15 @@ public class Shooter implements Subsystem {
   private Shooter() {
     mMotor1 = new CANSparkMax(Constants.Ports.SHOOTER_MOTOR_1, MotorType.kBrushless);
     mMotor2 = new CANSparkMax(Constants.Ports.SHOOTER_MOTOR_2, MotorType.kBrushless);
+
+    mMotor1.restoreFactoryDefaults();
+    mMotor2.restoreFactoryDefaults();
+
     mMotor1.setIdleMode(IdleMode.kCoast);
     mMotor2.setIdleMode(IdleMode.kCoast);
+
+    //mMotor1.setInverted(true);
+    //mMotor2.setInverted(true);
 
     mMotor2.follow(mMotor1);
 
@@ -58,11 +62,21 @@ public class Shooter implements Subsystem {
 
   public void updateSmartDashboard(){
     SmartDashboard.putNumber("Shooter/encoderspeed", getRPMs());
-    //System.out.println("Shooter Sped: " + getRPMs());
+    if (Robot.verbose) {
+      SmartDashboard.putNumber("Shooter/Ball Ejection Speed", getBallSpeed());
+    }
   }
 
   public double getRPMs() {
     return mEncoder.getVelocity();
+  }
+
+  public double getNeededBallVelocity(double distance) {
+    return (1 / (((Math.tan(Constants.Values.SHOOTER_RELEASE_ANGLE * (Math.PI / 180))) / (-4.9 * distance)) + ((2.49 - Constants.Values.SHOOTER_RELEASE_HEIGHT) / (4.9 * distance * distance)))) * (1 / Math.cos(Constants.Values.SHOOTER_RELEASE_ANGLE * (Math.PI / 180)));
+  }
+
+  public double getBallSpeed() {
+    return (getRPMs() / 60) * (Constants.Values.SHOOTER_CIRCUMFERENCE_CM / 100);
   }
 
   @Override
