@@ -1,11 +1,5 @@
 package frc.robot;
 
-import java.util.HashMap;
-
-import org.team997coders.spartanlib.motion.pathfollower.data.PathData;
-import org.team997coders.spartanlib.motion.pathfollower.data.PathSwervePreloadedData;
-
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import frc.robot.util.Gains;
 
 public final class Constants {
@@ -143,38 +137,6 @@ public final class Constants {
         new Gains(0.01, 0.0, 0.0, 0.0),
         new Gains(0.01, 0.0, 0.0, 0.0)
       };
-      
-    public static final int
-
-      LED_COUNT = 35,
-      LED_WIDTH = 7,
-      LED_ROWS = 5;
-
   }
 
-  public static class PathFollower {
-
-    public static final double
-
-      TRACK_WIDTH = 2.1;
-
-    public static final String[] PATHS = {
-      "GoToPickup",
-      "GoToShootPos",
-      "Pickup3",
-      "TrenchPivot"
-    };
-
-    public static final HashMap<String, PathData> PATH_DATA = new HashMap<String, PathData>() {{
-      put("GoToPickup", new PathSwervePreloadedData("GoToPickup",
-        new Rotation2d(0.0), new Rotation2d(0.0)));
-      put("GoToShootPos", new PathSwervePreloadedData("GoToShootPos",
-        new Rotation2d(0.0), new Rotation2d(0.0)));
-      put("Pickup3", new PathSwervePreloadedData("Pickup3",
-        new Rotation2d(0.0), new Rotation2d(0.0)));
-      put("TrenchPivot", new PathSwervePreloadedData("TrenchPivot",
-        new Rotation2d(0.0), new Rotation2d(0.0)));
-    }};
-
-  }
 }
